@@ -88,6 +88,8 @@ class IpRange:
     def contain(self, ip):
         try:
             ipobj = ipaddress.ip_address(ip)
+            if ipobj.version != self._ip_min.version:
+                return False
             return ipobj >= self._ip_min and ipobj <= self._ip_max
         except ValueError:
             return False

@@ -40,6 +40,10 @@ class Test_IpRange_set_range(unittest.TestCase):
         self.assertEqual(ipv6_str, self.myrange._ip_min.compressed)
         self.assertEqual(self.myrange._ip_min, self.myrange._ip_max)
 
+        # 支持128位packed ipv6地址初始化
+        ipv6_packed = b' \x01\r\xb8\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x00'
+        self.assertTrue(self.myrange.set_range(ipv6_packed))
+
     def test_set_prefix_network(self):
         '''
             @brief: 用前缀式网络地址初始化
@@ -131,6 +135,14 @@ class Test_IpRange_containment_test(unittest.TestCase):
         # 被测试 的IP超出国IP范围时, 返回False
         self.assertFalse(self.ipv6range.contain("2001:db00::e"))
         self.assertFalse(self.ipv6range.contain("2001:db00::100"))
+
+    def test_ipv4_ipv6_mix_error(self):
+        '''
+            @brief: 测试一个IPv4地址是否包含于某个IPv6范围内,或者
+                    测试一个IPv6地址是否包含于某个IPv4范围内,都返回False
+        '''
+        self.assertFalse(self.ipv6range.contain("192.168.1.1"))
+        self.assertFalse(self.ipv4range.contain("2001:db00::e"))
 
     def test_support_ipstr(self):
         '''
